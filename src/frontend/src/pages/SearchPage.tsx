@@ -8,225 +8,477 @@ import {
   Instagram,
   Mail,
   MapPin,
+  Newspaper,
   Phone,
   Search,
   Twitter,
   Upload,
   User,
   X,
+  Youtube,
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
-// ─── Simulated Internet-Wide Database ───────────────────────────────────────
-const FULL_DATABASE = [
+// ─── Indian Intelligence Database ───────────────────────────────────────────
+const INDIAN_DATABASE = [
   {
     id: 1,
-    name: "Marcus T. Thompson",
-    mobile: "+1-555-0124",
-    altNumbers: ["+1-555-9901", "+1-800-0124"],
-    address: "247 East Harbor Blvd, Apt 3B, Los Angeles, CA 90012",
-    email: "m.thompson.la@gmail.com",
-    dob: "1984-06-15",
-    nationality: "American",
+    name: "Ravi Kumar Sharma",
+    mobile: "+91-9876543210",
+    altNumbers: ["+91-9988776655"],
+    address: "B-14, Sector 22, Rohini, New Delhi - 110085",
+    email: "ravi.k.sharma@gmail.com",
+    dob: "1985-03-12",
+    aadhaar: "XXXX-XXXX-4521",
+    pan: "ABCDE1234F",
+    nationality: "Indian",
+    state: "Delhi",
     status: "criminal" as const,
     flagReason:
-      "Warrant active: Armed robbery, Level 4. Multiple prior convictions.",
+      "Warrant active: Bank fraud ₹2.4 crore. Delhi Police Case No. 1142/2024.",
     criminalHistory: [
       {
-        year: "2019",
-        crime: "Armed Robbery",
-        court: "LA Superior Court",
+        year: "2020",
+        crime: "Cheating & Forgery",
+        court: "Tis Hazari District Court",
         verdict: "Convicted",
       },
       {
-        year: "2021",
-        crime: "Assault & Battery",
-        court: "LA Superior Court",
+        year: "2022",
+        crime: "Bank Fraud — ₹85 Lakh",
+        court: "Delhi High Court",
         verdict: "Convicted",
       },
       {
         year: "2024",
-        crime: "Warrant Issued — Assault",
-        court: "Federal",
+        crime: "Fraud — ₹2.4 Crore (Warrant)",
+        court: "CBI Court Delhi",
         verdict: "Pending",
       },
     ],
     social: {
-      facebook: "marcus.t.thompson.la",
-      instagram: "@marcus_la_official",
-      twitter: "@mthompson_la",
+      facebook: "ravi.k.sharma.delhi",
+      instagram: "@ravi_sharma_official",
+      twitter: "@RaviSharmaDelhi",
+      linkedin: "ravi-kumar-sharma-delhi",
     },
     lastSeenLocations: [
       {
-        place: "Los Angeles, CA",
-        date: "2026-03-28",
-        source: "Google Maps Check-in",
+        place: "Rohini, Delhi",
+        date: "2026-04-01",
+        source: "Facebook Check-in",
       },
-      { place: "Las Vegas, NV", date: "2026-03-15", source: "Facebook Post" },
-      { place: "San Diego, CA", date: "2026-02-20", source: "Instagram Tag" },
+      {
+        place: "Chandigarh, Punjab",
+        date: "2026-03-20",
+        source: "Instagram Story",
+      },
+      {
+        place: "Gurgaon, Haryana",
+        date: "2026-02-28",
+        source: "Mobile Tower Data",
+      },
+    ],
+    newsLinks: [
+      {
+        source: "Hindustan Times",
+        headline:
+          "Delhi man arrested for ₹2.4 crore bank fraud, absconding since 2024",
+        url: "https://www.hindustantimes.com/delhi-news/bank-fraud-accused-ravi-sharma-absconding",
+        date: "2024-11-05",
+        snippet:
+          "Ravi Kumar Sharma, 39, resident of Rohini, is accused of duping multiple bank customers in a ₹2.4 crore fraud scheme...",
+      },
+      {
+        source: "Times of India",
+        headline:
+          "CBI issues lookout notice for Delhi fraud suspect Ravi Sharma",
+        url: "https://www.timesofindia.com/city/delhi/cbi-lookout-ravi-sharma",
+        date: "2025-01-18",
+        snippet:
+          "The Central Bureau of Investigation has issued a lookout notice for Ravi Kumar Sharma in connection with a major banking fraud case...",
+      },
+      {
+        source: "NDTV",
+        headline: "Bank fraud kingpin traced to Chandigarh after Delhi escape",
+        url: "https://www.ndtv.com/delhi-news/bank-fraud-ravi-sharma-chandigarh-traced",
+        date: "2026-03-22",
+        snippet:
+          "Delhi Police believes Ravi Sharma is now hiding in Chandigarh after his Instagram story revealed his location...",
+      },
     ],
     internetSources: [
       {
-        site: "Court Records LA",
-        url: "#",
-        snippet:
-          "Marcus T. Thompson, Docket #LA-2024-4821, Warrant active for aggravated assault...",
-      },
-      {
         site: "Facebook",
-        url: "#",
+        url: "https://facebook.com/ravi.k.sharma.delhi",
         snippet:
-          "Profile found: Marcus Thompson, Los Angeles. 342 friends. Last active 3 days ago.",
+          "Ravi K Sharma — Rohini, Delhi. 1.2K friends. Profile public. Last post 3 days ago.",
       },
       {
         site: "LinkedIn",
-        url: "#",
+        url: "https://linkedin.com/in/ravi-kumar-sharma-delhi",
         snippet:
-          "Marcus Thompson — Former Security Guard at Harbor Corp (2018–2020)",
+          "Ravi Kumar Sharma — Former Branch Manager at Punjab National Bank (2015–2021). 400+ connections.",
+      },
+      {
+        site: "Tis Hazari Court Records",
+        url: "https://delhicourts.nic.in/cases/1142-2024",
+        snippet:
+          "Case #1142/2024 — Ravi Kumar Sharma, Accused. Bank fraud IPC 420/465. Date of next hearing: 12-May-2026.",
       },
       {
         site: "Instagram",
-        url: "#",
+        url: "https://instagram.com/ravi_sharma_official",
         snippet:
-          "@marcus_la_official — 892 followers. Recent posts tagged in Las Vegas.",
+          "@ravi_sharma_official — 3.4K followers. Story posted from Chandigarh (2026-03-20).",
       },
     ],
-    vehicleInfo: "2019 Black Toyota Camry — CA Plate: 7XYZ-321",
+    vehicleInfo: "2021 White Maruti Suzuki Ciaz — DL-01-CA-4520",
     associates: [
-      "James R. (Accomplice — Docket #LA-2022)",
-      "Unknown Female — alias 'Red'",
+      "Suresh Garg (Co-accused, absconding)",
+      "Meena Verma (Account holder, arrested)",
     ],
   },
   {
     id: 2,
-    name: "Sarah L. Chen",
-    mobile: "+1-555-0198",
-    altNumbers: ["+1-555-7721"],
-    address: "88 Riverview Dr, San Francisco, CA 94110",
-    email: "sarah.chen.sf@protonmail.com",
-    dob: "1991-11-02",
-    nationality: "American (Chinese origin)",
+    name: "Priya Singh Chauhan",
+    mobile: "+91-8765432109",
+    altNumbers: ["+91-7654321098"],
+    address: "32, Gandhi Nagar, Bhopal, Madhya Pradesh - 462001",
+    email: "priya.singhchauhan@yahoo.com",
+    dob: "1993-07-25",
+    aadhaar: "XXXX-XXXX-7890",
+    pan: "BVHXY5432K",
+    nationality: "Indian",
+    state: "Madhya Pradesh",
     status: "suspicious" as const,
-    flagReason: "Under investigation. Linked to financial fraud network.",
+    flagReason:
+      "Under investigation: Cyber fraud and online sextortion network. MP Cyber Cell Case.",
     criminalHistory: [
       {
         year: "2023",
-        crime: "Wire Fraud Investigation",
-        court: "Federal",
+        crime: "Cyber Fraud — Online Extortion",
+        court: "MP Cyber Cell",
+        verdict: "Under Review",
+      },
+      {
+        year: "2025",
+        crime: "Sextortion Network — Investigation",
+        court: "CBI",
         verdict: "Under Review",
       },
     ],
     social: {
-      facebook: "sarah.lchen.sf",
-      instagram: "@sarahchen_bay",
-      twitter: "@slchen_finance",
+      facebook: "priya.singh.chauhan.bpl",
+      instagram: "@priyasingh_bhopal",
+      twitter: "@PriyaSinghCBPL",
+      linkedin: "",
     },
     lastSeenLocations: [
+      { place: "Bhopal, MP", date: "2026-04-03", source: "Twitter Activity" },
+      { place: "Indore, MP", date: "2026-03-15", source: "Instagram Post" },
+    ],
+    newsLinks: [
       {
-        place: "San Francisco, CA",
-        date: "2026-04-02",
-        source: "LinkedIn Activity",
+        source: "Dainik Bhaskar",
+        headline: "भोपाल में साइबर ठगी नेटवर्क का भंडाफोड़, महिला समेत तीन गिरफ्तार",
+        url: "https://www.bhaskar.com/local/mp/bhopal/news/cyber-fraud-network-bhopal-arrested",
+        date: "2025-08-12",
+        snippet:
+          "भोपाल साइबर सेल ने एक बड़े ठगी नेटवर्क का भंडाफोड़ किया जिसमें प्रिया सिंह चौहान का नाम सामने आया...",
       },
-      { place: "New York, NY", date: "2026-03-10", source: "Twitter Post" },
+      {
+        source: "Amar Ujala",
+        headline:
+          "Bhopal cyber sextortion gang busted, woman suspect named in FIR",
+        url: "https://www.amarujala.com/bhopal/cyber-sextortion-gang-bhopal-priya-singh",
+        date: "2025-11-20",
+        snippet:
+          "Madhya Pradesh Police has named Priya Singh Chauhan as a key suspect in an online sextortion case involving multiple victims across India...",
+      },
     ],
     internetSources: [
       {
-        site: "Federal Court Records",
-        url: "#",
+        site: "Facebook",
+        url: "https://facebook.com/priya.singh.chauhan.bpl",
         snippet:
-          "Sarah L. Chen — Case #FED-2023-7721, Wire fraud investigation ongoing...",
+          "Priya Singh Chauhan — Bhopal. 800+ friends. Profile partially private.",
       },
       {
-        site: "LinkedIn",
-        url: "#",
+        site: "MP Cyber Cell Records",
+        url: "https://mppolice.gov.in/cybercell/cases",
         snippet:
-          "Sarah Chen — Financial Analyst at BayTech Investments. 500+ connections.",
+          "Case filed against Priya Singh Chauhan — MP Cyber Cell FIR No. 445/2023. Status: Under Investigation.",
       },
       {
         site: "Twitter",
-        url: "#",
+        url: "https://twitter.com/PriyaSinghCBPL",
         snippet:
-          "@slchen_finance — Account suspended. Last tweet flagged for suspicious links.",
+          "@PriyaSinghCBPL — Account flagged. Multiple reports filed. Last tweet 2 days ago.",
       },
     ],
-    vehicleInfo: "2022 Silver Honda Civic — CA Plate: 9ABC-112",
-    associates: ["David K. (Co-accused in fraud)", "Unknown offshore entity"],
+    vehicleInfo: "2020 Grey Honda Activa — MP-04-KL-8812",
+    associates: [
+      "Rahul Tiwari (Main accused, arrested)",
+      "Unknown online handler (Mumbai)",
+    ],
   },
   {
     id: 3,
-    name: "James O. Williams",
-    mobile: "+1-555-0201",
+    name: "Suresh Narayan Patil",
+    mobile: "+91-7654321987",
     altNumbers: [],
-    address: "1502 Maple Street, Chicago, IL 60601",
-    email: "james.williams.chi@outlook.com",
-    dob: "1979-03-20",
-    nationality: "American",
+    address: "Plot No 45, Shivajinagar, Pune, Maharashtra - 411005",
+    email: "suresh.patil.pune@gmail.com",
+    dob: "1978-11-08",
+    aadhaar: "XXXX-XXXX-2345",
+    pan: "CRTPQ9876H",
+    nationality: "Indian",
+    state: "Maharashtra",
     status: "normal" as const,
     flagReason: null,
     criminalHistory: [],
     social: {
-      facebook: "james.o.williams.chi",
-      instagram: "@jameswilliams_chi",
+      facebook: "suresh.narayan.patil.pune",
+      instagram: "@sureshpatil_pune",
       twitter: "",
+      linkedin: "suresh-narayan-patil",
     },
     lastSeenLocations: [
-      { place: "Chicago, IL", date: "2026-04-04", source: "Facebook Check-in" },
+      {
+        place: "Pune, Maharashtra",
+        date: "2026-04-05",
+        source: "Facebook Check-in",
+      },
     ],
+    newsLinks: [],
     internetSources: [
       {
         site: "LinkedIn",
-        url: "#",
+        url: "https://linkedin.com/in/suresh-narayan-patil",
         snippet:
-          "James Williams — Software Engineer at Midwest Solutions. No criminal record found.",
+          "Suresh Patil — Senior Engineer at TCS, Pune. No criminal record found.",
       },
       {
         site: "Facebook",
-        url: "#",
+        url: "https://facebook.com/suresh.narayan.patil.pune",
         snippet:
-          "James O. Williams, Chicago. Active community member. 1.2K friends.",
+          "Suresh Narayan Patil, Pune. Active community member. 2.1K friends.",
       },
     ],
-    vehicleInfo: "2020 Blue Ford F-150 — IL Plate: IL-4432",
+    vehicleInfo: "2022 Red Honda City — MH-12-AB-7700",
     associates: [],
+  },
+  {
+    id: 4,
+    name: "Mohammad Asif Khan",
+    mobile: "+91-9123456780",
+    altNumbers: ["+91-8012345678"],
+    address: "12/C, Old City Road, Hyderabad, Telangana - 500002",
+    email: "asif.khan.hyd@gmail.com",
+    dob: "1989-05-17",
+    aadhaar: "XXXX-XXXX-6677",
+    pan: "DLMNA7654J",
+    nationality: "Indian",
+    state: "Telangana",
+    status: "criminal" as const,
+    flagReason:
+      "Wanted: Drug trafficking network. Hyderabad Police & NCB Case No. HYD/NCB/2025/88.",
+    criminalHistory: [
+      {
+        year: "2021",
+        crime: "Drug Possession",
+        court: "Hyderabad Sessions Court",
+        verdict: "Convicted",
+      },
+      {
+        year: "2023",
+        crime: "Drug Trafficking Network",
+        court: "Telangana HC",
+        verdict: "Convicted",
+      },
+      {
+        year: "2025",
+        crime: "NCB Wanted — Interstate Smuggling",
+        court: "NCB Special Court",
+        verdict: "Pending",
+      },
+    ],
+    social: {
+      facebook: "asif.khan.hyderabad.official",
+      instagram: "@asif_khan_hyd",
+      twitter: "",
+      linkedin: "",
+    },
+    lastSeenLocations: [
+      {
+        place: "Hyderabad, Telangana",
+        date: "2026-03-30",
+        source: "CCTV Near Old City",
+      },
+      {
+        place: "Bengaluru, Karnataka",
+        date: "2026-03-10",
+        source: "Hotel Check-in",
+      },
+      {
+        place: "Mumbai, Maharashtra",
+        date: "2026-02-15",
+        source: "Mobile Tower",
+      },
+    ],
+    newsLinks: [
+      {
+        source: "The Hindu",
+        headline:
+          "NCB nabs Hyderabad drug ring, prime accused Mohammad Asif Khan absconding",
+        url: "https://www.thehindu.com/news/national/telangana/ncb-hyderabad-drug-ring-asif-khan",
+        date: "2025-07-22",
+        snippet:
+          "The Narcotics Control Bureau (NCB) has declared Mohammad Asif Khan, 37, as wanted in connection with a ₹50 crore drug trafficking network...",
+      },
+      {
+        source: "NDTV",
+        headline:
+          "Hyderabad drug lord traced to Bengaluru hotel, police on the lookout",
+        url: "https://www.ndtv.com/telangana-news/hyderabad-drug-lord-asif-khan-bengaluru",
+        date: "2026-03-12",
+        snippet:
+          "Sources in Hyderabad Police confirm that Mohammad Asif Khan was traced to a hotel in Bengaluru's Majestic area before slipping away...",
+      },
+      {
+        source: "Deccan Chronicle",
+        headline:
+          "Old City drug kingpin still on the run despite Interpol red notice",
+        url: "https://www.deccanchronicle.com/nation/crime/hyderabad-drug-kingpin-interpol",
+        date: "2026-01-30",
+        snippet:
+          "Mohammad Asif Khan remains at large despite an Interpol red notice. Hyderabad Police has issued a cash reward of ₹5 lakhs for information...",
+      },
+    ],
+    internetSources: [
+      {
+        site: "NCB India Records",
+        url: "https://www.ncb.nic.in/wanted/HYD-NCB-2025-88",
+        snippet:
+          "Wanted: Mohammad Asif Khan — NCB Case HYD/NCB/2025/88. Drug trafficking. Reward: ₹5 Lakhs.",
+      },
+      {
+        site: "Facebook",
+        url: "https://facebook.com/asif.khan.hyderabad.official",
+        snippet:
+          "Asif Khan Hyderabad — Profile found. 2.3K followers. Last active 7 days ago.",
+      },
+      {
+        site: "CCTV Hyderabad Traffic",
+        url: "https://tspolice.gov.in/cctv/records",
+        snippet:
+          "Vehicle MH-01-BX-5500 linked to Mohammad Asif Khan spotted near Old City, Hyderabad — 30 March 2026, 9:14 PM.",
+      },
+    ],
+    vehicleInfo:
+      "2023 Black Toyota Fortuner — MH-01-BX-5500 (Stolen plates suspected)",
+    associates: [
+      "Jabir Hussain (Arrested — Nov 2025)",
+      "Unknown supplier — alias 'Tiger' (Karachi connection)",
+    ],
+  },
+  {
+    id: 5,
+    name: "Anita Devi Gupta",
+    mobile: "+91-9012345678",
+    altNumbers: [],
+    address: "5, Tagore Road, Civil Lines, Allahabad (Prayagraj), UP - 211001",
+    email: "anita.gupta.prayagraj@gmail.com",
+    dob: "1975-09-30",
+    aadhaar: "XXXX-XXXX-3399",
+    pan: "EQFGH3210L",
+    nationality: "Indian",
+    state: "Uttar Pradesh",
+    status: "suspicious" as const,
+    flagReason:
+      "Under scrutiny: Land fraud case — illegal property registration. UP Police FIR 990/2025.",
+    criminalHistory: [
+      {
+        year: "2025",
+        crime: "Land Fraud — Illegal Registration",
+        court: "Allahabad HC",
+        verdict: "Under Investigation",
+      },
+    ],
+    social: {
+      facebook: "anita.devi.gupta.prayagraj",
+      instagram: "",
+      twitter: "",
+      linkedin: "anita-gupta-prayagraj",
+    },
+    lastSeenLocations: [
+      { place: "Prayagraj, UP", date: "2026-04-02", source: "LinkedIn Post" },
+      { place: "Lucknow, UP", date: "2026-03-18", source: "Travel Record" },
+    ],
+    newsLinks: [
+      {
+        source: "Amar Ujala",
+        headline: "प्रयागराज में जमीन फर्जीवाड़ा: महिला सहित दो के खिलाफ FIR",
+        url: "https://www.amarujala.com/uttar-pradesh/prayagraj/land-fraud-fir-anita-gupta",
+        date: "2025-09-05",
+        snippet:
+          "प्रयागराज पुलिस ने नागरिकों की शिकायत पर अनिता देवी गुप्ता सहित दो लोगों के खिलाफ जमीन फर्जीवाड़े का मामला दर्ज किया...",
+      },
+    ],
+    internetSources: [
+      {
+        site: "UP Police Records",
+        url: "https://uppolice.gov.in/fir/990-2025",
+        snippet:
+          "FIR No. 990/2025 — Anita Devi Gupta, IPC 420/467. Land fraud investigation ongoing.",
+      },
+      {
+        site: "LinkedIn",
+        url: "https://linkedin.com/in/anita-gupta-prayagraj",
+        snippet:
+          "Anita Gupta — Property Consultant, Prayagraj. 300+ connections.",
+      },
+    ],
+    vehicleInfo: "2019 White Hyundai Creta — UP-70-GH-1123",
+    associates: ["Ramesh Chandra (Co-accused)"],
   },
 ];
 
-type DbRecord = (typeof FULL_DATABASE)[0];
+type DbRecord = (typeof INDIAN_DATABASE)[0];
 type SearchResult = DbRecord & { matchPct?: number; matchSource?: string };
 
 const FACE_MATCH_SOURCES = [
   {
     source: "Facebook",
-    detail: "Profile photo matched on public account 'marcus.t.thompson.la'",
+    detail: "Profile photo matched on account 'ravi.k.sharma.delhi'",
     confidence: 97,
     date: "2026-04-01",
   },
   {
     source: "Instagram",
-    detail:
-      "Photo matched in @marcus_la_official story — tagged in Las Vegas, NV",
+    detail: "@ravi_sharma_official — story tagged in Chandigarh, Punjab",
     confidence: 94,
-    date: "2026-03-28",
+    date: "2026-03-20",
   },
   {
-    source: "CCTV Database",
-    detail:
-      "Face matched in Harbor District CCTV footage — 2026-03-28 11:42 AM",
+    source: "CCTV Delhi",
+    detail: "Face matched — Rohini Sector 22 CCTV, 01-Apr-2026 10:12 AM",
     confidence: 91,
-    date: "2026-03-28",
+    date: "2026-04-01",
   },
   {
     source: "Court Records",
-    detail: "Mugshot on file — LA Superior Court Docket #LA-2024-4821",
+    detail: "Mugshot on file — Tis Hazari Court, Case #1142/2024",
     confidence: 99,
-    date: "2024-08-15",
+    date: "2024-06-10",
   },
   {
     source: "LinkedIn",
-    detail: "Profile photo match — Former employee page still active",
+    detail: "Profile photo match — Former PNB Branch Manager page",
     confidence: 88,
-    date: "2026-02-10",
+    date: "2026-01-15",
   },
 ];
 
@@ -351,7 +603,6 @@ function DetailCard({
         <X size={16} />
       </button>
 
-      {/* Alert Banner */}
       {isCriminal && (
         <div
           className="slide-in alert-blink"
@@ -410,7 +661,7 @@ function DetailCard({
         </div>
       )}
 
-      {/* Face match sources */}
+      {/* Face Match Sources */}
       {faceMatchSources && (
         <div style={{ marginBottom: 20 }}>
           <p style={sectionHead}>
@@ -494,7 +745,9 @@ function DetailCard({
           <p style={sectionHead}>👤 IDENTITY</p>
           <div style={row}>
             <span style={label}>Full Name</span>
-            <span style={val}>{result.name}</span>
+            <span style={{ ...val, color: "#f2f5fa", fontWeight: 700 }}>
+              {result.name}
+            </span>
           </div>
           <div style={row}>
             <span style={label}>Date of Birth</span>
@@ -503,6 +756,22 @@ function DetailCard({
           <div style={row}>
             <span style={label}>Nationality</span>
             <span style={val}>{result.nationality}</span>
+          </div>
+          <div style={row}>
+            <span style={label}>State</span>
+            <span style={val}>{result.state}</span>
+          </div>
+          <div style={row}>
+            <span style={label}>Aadhaar (masked)</span>
+            <span style={{ ...val, fontFamily: "monospace" }}>
+              {result.aadhaar}
+            </span>
+          </div>
+          <div style={row}>
+            <span style={label}>PAN</span>
+            <span style={{ ...val, fontFamily: "monospace" }}>
+              {result.pan}
+            </span>
           </div>
           <div style={row}>
             <span style={label}>Status</span>
@@ -554,7 +823,10 @@ function DetailCard({
         <p style={sectionHead}>🌐 SOCIAL MEDIA PRESENCE</p>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" as const }}>
           {result.social.facebook && (
-            <span
+            <a
+              href={`https://facebook.com/${result.social.facebook}`}
+              target="_blank"
+              rel="noreferrer"
               style={{
                 background: "#1a2433",
                 border: "1px solid #2a3648",
@@ -565,13 +837,18 @@ function DetailCard({
                 display: "flex",
                 alignItems: "center",
                 gap: 5,
+                textDecoration: "none",
               }}
             >
-              <Facebook size={12} /> {result.social.facebook}
-            </span>
+              <Facebook size={12} style={{ color: "#1877f2" }} />{" "}
+              {result.social.facebook}
+            </a>
           )}
           {result.social.instagram && (
-            <span
+            <a
+              href={`https://instagram.com/${result.social.instagram.replace("@", "")}`}
+              target="_blank"
+              rel="noreferrer"
               style={{
                 background: "#1a2433",
                 border: "1px solid #2a3648",
@@ -582,13 +859,18 @@ function DetailCard({
                 display: "flex",
                 alignItems: "center",
                 gap: 5,
+                textDecoration: "none",
               }}
             >
-              <Instagram size={12} /> {result.social.instagram}
-            </span>
+              <Instagram size={12} style={{ color: "#e1306c" }} />{" "}
+              {result.social.instagram}
+            </a>
           )}
           {result.social.twitter && (
-            <span
+            <a
+              href={`https://twitter.com/${result.social.twitter.replace("@", "")}`}
+              target="_blank"
+              rel="noreferrer"
               style={{
                 background: "#1a2433",
                 border: "1px solid #2a3648",
@@ -599,15 +881,38 @@ function DetailCard({
                 display: "flex",
                 alignItems: "center",
                 gap: 5,
+                textDecoration: "none",
               }}
             >
-              <Twitter size={12} /> {result.social.twitter}
-            </span>
+              <Twitter size={12} style={{ color: "#1da1f2" }} />{" "}
+              {result.social.twitter}
+            </a>
+          )}
+          {result.social.linkedin && (
+            <a
+              href={`https://linkedin.com/in/${result.social.linkedin}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                background: "#1a2433",
+                border: "1px solid #2a3648",
+                color: "#a7b1c2",
+                padding: "5px 12px",
+                borderRadius: 8,
+                fontSize: 11,
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+                textDecoration: "none",
+              }}
+            >
+              <User size={12} style={{ color: "#0077b5" }} /> LinkedIn
+            </a>
           )}
         </div>
       </div>
 
-      {/* Last Seen Locations */}
+      {/* Last Seen */}
       <div style={{ marginBottom: 20 }}>
         <p style={sectionHead}>📍 LAST SEEN LOCATIONS</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -642,6 +947,85 @@ function DetailCard({
           ))}
         </div>
       </div>
+
+      {/* News Coverage */}
+      {result.newsLinks.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <p style={sectionHead}>
+            📰 NEWS COVERAGE ({result.newsLinks.length} ARTICLES FOUND)
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {result.newsLinks.map((news) => (
+              <a
+                key={news.url}
+                href={news.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  background: "#0d1b2e",
+                  border: "1px solid #1e3a5f",
+                  borderRadius: 8,
+                  padding: "12px 14px",
+                  textDecoration: "none",
+                  display: "block",
+                  transition: "border-color 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "#2a6496";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#1e3a5f";
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 5,
+                  }}
+                >
+                  <Newspaper
+                    size={13}
+                    style={{ color: "#42a5f5", flexShrink: 0 }}
+                  />
+                  <span
+                    style={{ color: "#42a5f5", fontSize: 11, fontWeight: 700 }}
+                  >
+                    {news.source}
+                  </span>
+                  <span
+                    style={{
+                      color: "#7e8aa0",
+                      fontSize: 10,
+                      marginLeft: "auto",
+                    }}
+                  >
+                    {news.date}
+                  </span>
+                  <ExternalLink size={10} style={{ color: "#7e8aa0" }} />
+                </div>
+                <div
+                  style={{
+                    color: "#e0e8f0",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    marginBottom: 4,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {news.headline}
+                </div>
+                <div
+                  style={{ color: "#7e8aa0", fontSize: 11, lineHeight: 1.6 }}
+                >
+                  {news.snippet}
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Criminal History */}
       {result.criminalHistory.length > 0 && (
@@ -713,13 +1097,24 @@ function DetailCard({
         <p style={sectionHead}>🔍 INTERNET SEARCH RESULTS</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {result.internetSources.map((src) => (
-            <div
+            <a
               key={src.site}
+              href={src.url}
+              target="_blank"
+              rel="noreferrer"
               style={{
                 background: "#111a28",
                 border: "1px solid #2a3648",
                 borderRadius: 8,
                 padding: "10px 14px",
+                textDecoration: "none",
+                display: "block",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#3a5a7a";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#2a3648";
               }}
             >
               <div
@@ -736,12 +1131,15 @@ function DetailCard({
                 >
                   {src.site}
                 </span>
-                <ExternalLink size={10} style={{ color: "#42a5f5" }} />
+                <ExternalLink
+                  size={10}
+                  style={{ color: "#42a5f5", marginLeft: 2 }}
+                />
               </div>
               <div style={{ color: "#7e8aa0", fontSize: 11, lineHeight: 1.6 }}>
                 {src.snippet}
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
@@ -750,8 +1148,9 @@ function DetailCard({
 }
 
 export default function SearchPage() {
-  const [tab, setTab] = useState<"mobile" | "face">("mobile");
+  const [tab, setTab] = useState<"mobile" | "name" | "face">("mobile");
   const [mobileQuery, setMobileQuery] = useState("");
+  const [nameQuery, setNameQuery] = useState("");
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
   const [faceMatchSources, setFaceMatchSources] = useState<
     typeof FACE_MATCH_SOURCES | undefined
@@ -779,7 +1178,7 @@ export default function SearchPage() {
     setSearchResult(null);
     setFaceMatchSources(undefined);
     setTimeout(() => {
-      const found = FULL_DATABASE.find(
+      const found = INDIAN_DATABASE.find(
         (u) =>
           u.mobile.includes(mobileQuery.trim()) ||
           u.altNumbers.some((n) => n.includes(mobileQuery.trim())),
@@ -801,6 +1200,39 @@ export default function SearchPage() {
     }, 1400);
   };
 
+  const handleNameSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nameQuery.trim()) return;
+    setLoading(true);
+    setNotFound(false);
+    setSearchResult(null);
+    setFaceMatchSources(undefined);
+    setTimeout(() => {
+      const q = nameQuery.trim().toLowerCase();
+      const found = INDIAN_DATABASE.find(
+        (u) =>
+          u.name.toLowerCase().includes(q) ||
+          u.address.toLowerCase().includes(q) ||
+          u.state.toLowerCase().includes(q) ||
+          u.email.toLowerCase().includes(q),
+      );
+      if (found) {
+        setSearchResult(found);
+        logSearch(nameQuery, "Name / Keyword Search", found.status);
+        if (found.status === "criminal")
+          toast.error("🚨 Criminal record found — RED ALERT");
+        else if (found.status === "suspicious")
+          toast.warning("⚠️ Suspicious record found");
+        else toast.success("✅ Record found — Normal status");
+      } else {
+        setNotFound(true);
+        logSearch(nameQuery, "Name / Keyword Search", "not found");
+        toast.info("No record found for this name/keyword");
+      }
+      setLoading(false);
+    }, 1400);
+  };
+
   const handleFaceSearch = () => {
     if (!faceFile) return;
     setLoading(true);
@@ -809,9 +1241,9 @@ export default function SearchPage() {
     setFaceMatchSources(undefined);
     setTimeout(() => {
       const matched = {
-        ...FULL_DATABASE[0],
+        ...INDIAN_DATABASE[0],
         matchPct: 97,
-        matchSource: "Facebook / CCTV",
+        matchSource: "Facebook / CCTV Delhi",
       };
       setSearchResult(matched);
       setFaceMatchSources(FACE_MATCH_SOURCES);
@@ -821,6 +1253,12 @@ export default function SearchPage() {
       );
       setLoading(false);
     }, 2000);
+  };
+
+  const resetSearch = () => {
+    setSearchResult(null);
+    setNotFound(false);
+    setFaceMatchSources(undefined);
   };
 
   const inputStyle = {
@@ -834,6 +1272,20 @@ export default function SearchPage() {
     outline: "none",
   };
 
+  const TABS = [
+    {
+      key: "mobile" as const,
+      label: "MOBILE SEARCH",
+      icon: <Phone size={13} />,
+    },
+    {
+      key: "name" as const,
+      label: "NAME / KEYWORD",
+      icon: <Search size={13} />,
+    },
+    { key: "face" as const, label: "FACE MATCH", icon: <Upload size={13} /> },
+  ];
+
   return (
     <div style={{ padding: "32px 24px", maxWidth: 960, margin: "0 auto" }}>
       <h1
@@ -845,11 +1297,11 @@ export default function SearchPage() {
           marginBottom: 4,
         }}
       >
-        SECURITY INTELLIGENCE SEARCH
+        🇮🇳 INDIAN SECURITY INTELLIGENCE SEARCH
       </h1>
       <p style={{ color: "#7e8aa0", fontSize: 13, marginBottom: 24 }}>
-        Full internet-wide identity verification and criminal record search
-        engine.
+        India-wide identity verification, criminal record search, news coverage
+        &amp; social profile finder.
       </p>
 
       {/* Disclaimer */}
@@ -867,63 +1319,53 @@ export default function SearchPage() {
           style={{ color: "#ff8a80", fontSize: 12, margin: 0, lineHeight: 1.6 }}
         >
           <strong>⚠️ LEGAL NOTICE:</strong> This platform only shows data of
-          registered users. Unauthorized use, stalking, or misuse is punishable
-          under law.
+          registered users. Use for official/authorised security purposes only.
+          Unauthorized use is punishable under Indian IT Act 2000 & IPC.
         </p>
       </div>
 
       {/* Search Card */}
       <div className="security-card" style={{ padding: 28 }}>
-        {/* Tabs */}
+        {/* Tabs — 3 options */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: "1fr 1fr 1fr",
             background: "#111a28",
             borderRadius: 8,
             padding: 3,
             marginBottom: 24,
           }}
         >
-          {(["mobile", "face"] as const).map((t) => (
+          {TABS.map((t) => (
             <button
-              key={t}
+              key={t.key}
               type="button"
               onClick={() => {
-                setTab(t);
-                setSearchResult(null);
-                setNotFound(false);
-                setFaceMatchSources(undefined);
+                setTab(t.key);
+                resetSearch();
               }}
               style={{
                 padding: "10px",
                 borderRadius: 6,
                 border: "none",
                 cursor: "pointer",
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: 700,
                 letterSpacing: 1,
                 background:
-                  tab === t
+                  tab === t.key
                     ? "linear-gradient(135deg, #c62828, #d32f2f)"
                     : "transparent",
-                color: tab === t ? "white" : "#7e8aa0",
+                color: tab === t.key ? "white" : "#7e8aa0",
                 transition: "all 0.2s",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 6,
+                gap: 5,
               }}
             >
-              {t === "mobile" ? (
-                <>
-                  <Phone size={13} /> MOBILE SEARCH
-                </>
-              ) : (
-                <>
-                  <Upload size={13} /> FACE MATCH
-                </>
-              )}
+              {t.icon} {t.label}
             </button>
           ))}
         </div>
@@ -947,7 +1389,7 @@ export default function SearchPage() {
                   type="text"
                   value={mobileQuery}
                   onChange={(e) => setMobileQuery(e.target.value)}
-                  placeholder="Enter mobile number (e.g. +1-555-0124)"
+                  placeholder="Indian mobile number (e.g. +91-9876543210)"
                   style={{ ...inputStyle, paddingLeft: 36 }}
                 />
               </div>
@@ -971,8 +1413,59 @@ export default function SearchPage() {
               </button>
             </div>
             <p style={{ color: "#7e8aa0", fontSize: 11, marginTop: 8 }}>
-              Try: +1-555-0124 (Criminal) · +1-555-0198 (Suspicious) ·
-              +1-555-0201 (Normal)
+              Try: +91-9876543210 (Criminal · Ravi Sharma, Delhi) &nbsp;·&nbsp;
+              +91-8765432109 (Suspicious · Priya Singh, Bhopal) &nbsp;·&nbsp;
+              +91-7654321987 (Normal · Suresh Patil, Pune) &nbsp;·&nbsp;
+              +91-9123456780 (Criminal · Asif Khan, Hyderabad)
+            </p>
+          </form>
+        )}
+
+        {/* Name / Keyword Search */}
+        {tab === "name" && (
+          <form onSubmit={handleNameSearch}>
+            <div className="flex gap-3">
+              <div style={{ position: "relative", flex: 1 }}>
+                <Search
+                  size={14}
+                  style={{
+                    position: "absolute",
+                    left: 12,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "#7e8aa0",
+                  }}
+                />
+                <input
+                  type="text"
+                  value={nameQuery}
+                  onChange={(e) => setNameQuery(e.target.value)}
+                  placeholder="Enter name, city, state or keyword (e.g. Ravi Sharma, Delhi, Maharashtra)"
+                  style={{ ...inputStyle, paddingLeft: 36 }}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-danger"
+                style={{
+                  padding: "12px 24px",
+                  fontSize: 13,
+                  letterSpacing: 1,
+                  border: "none",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                <Search size={14} /> {loading ? "SCANNING..." : "SEARCH"}
+              </button>
+            </div>
+            <p style={{ color: "#7e8aa0", fontSize: 11, marginTop: 8 }}>
+              Try: "Ravi Sharma" · "Priya Singh" · "Asif Khan" · "Anita Gupta" ·
+              "Delhi" · "Hyderabad" · "Pune"
             </p>
           </form>
         )}
@@ -1004,7 +1497,7 @@ export default function SearchPage() {
                   : "Click to upload photo for face match"}
               </div>
               <div style={{ color: "#7e8aa0", fontSize: 12 }}>
-                JPG, PNG supported — Cross-platform face match
+                JPG, PNG — Cross-platform India face search
               </div>
             </button>
             <input
@@ -1042,7 +1535,8 @@ export default function SearchPage() {
                 <div
                   style={{ color: "#e53935", fontSize: 12, letterSpacing: 1 }}
                 >
-                  SCANNING: Facebook · Instagram · CCTV · Court DB · LinkedIn...
+                  SCANNING: Facebook · Instagram · CCTV Delhi · Court DB ·
+                  LinkedIn · NCB · UP Police...
                 </div>
                 <div
                   style={{
@@ -1071,10 +1565,7 @@ export default function SearchPage() {
         {searchResult && (
           <DetailCard
             result={searchResult}
-            onClose={() => {
-              setSearchResult(null);
-              setFaceMatchSources(undefined);
-            }}
+            onClose={resetSearch}
             faceMatchSources={faceMatchSources}
           />
         )}
@@ -1095,10 +1586,11 @@ export default function SearchPage() {
               style={{ color: "#7e8aa0", margin: "0 auto 10px" }}
             />
             <div style={{ color: "#a7b1c2", fontSize: 14, fontWeight: 600 }}>
-              No matching record found
+              No matching record found in Indian database
             </div>
             <div style={{ color: "#7e8aa0", fontSize: 12, marginTop: 4 }}>
-              This number is not in the registered database
+              This person/number is not in the registered Indian security
+              database
             </div>
           </div>
         )}
