@@ -15,10 +15,12 @@ import {
   Upload,
   User,
   Video,
+  Wifi,
+  WifiOff,
   X,
   Youtube,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   type DbRecord,
@@ -85,6 +87,445 @@ function StatusBadge({ status }: { status: string }) {
     >
       ✅ NORMAL
     </span>
+  );
+}
+
+// ─── INTERNET SEARCH PANEL ──────────────────────────────────────────────────
+
+interface WikipediaResult {
+  extract: string;
+  thumbnail?: { source: string };
+  content_urls?: { desktop: { page: string } };
+  title: string;
+}
+
+function InternetSearchPanel({
+  personName,
+  personMobile,
+}: {
+  personName: string;
+  personMobile: string;
+}) {
+  const [wikiData, setWikiData] = useState<WikipediaResult | null>(null);
+  const [wikiLoading, setWikiLoading] = useState(true);
+  const [wikiError, setWikiError] = useState<string | null>(null);
+  const [linksVisible, setLinksVisible] = useState(false);
+
+  const encodedName = encodeURIComponent(personName);
+  const encodedMobile = encodeURIComponent(personMobile);
+
+  useEffect(() => {
+    let cancelled = false;
+    setWikiLoading(true);
+    setWikiError(null);
+    setWikiData(null);
+
+    // Show links after 2s loading animation
+    const linksTimer = setTimeout(() => {
+      if (!cancelled) setLinksVisible(true);
+    }, 2000);
+
+    // Fetch Wikipedia
+    const wikiQuery = personName.split(" ").slice(0, 2).join(" ");
+    fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiQuery)}`,
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error("not_found");
+        return res.json();
+      })
+      .then((data: WikipediaResult) => {
+        if (!cancelled) {
+          setWikiData(data);
+          setWikiLoading(false);
+        }
+      })
+      .catch((err: Error) => {
+        if (!cancelled) {
+          setWikiError(
+            err.message === "not_found"
+              ? "No Wikipedia entry found for this person"
+              : "Internet connection error — unable to fetch Wikipedia data",
+          );
+          setWikiLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(linksTimer);
+    };
+  }, [personName]);
+
+  const quickLinks = [
+    {
+      icon: <Newspaper size={12} />,
+      label: "Google News",
+      color: "#4285f4",
+      bg: "#0a1628",
+      border: "#1a3a6a",
+      url: `https://news.google.com/search?q=${encodedName}&hl=en-IN`,
+      desc: `Latest news about ${personName}`,
+    },
+    {
+      icon: <Twitter size={12} />,
+      label: "Twitter / X",
+      color: "#1d9bf0",
+      bg: "#061318",
+      border: "#0a2a38",
+      url: `https://twitter.com/search?q=${encodedName}`,
+      desc: `Tweets mentioning ${personName}`,
+    },
+    {
+      icon: <User size={12} />,
+      label: "LinkedIn",
+      color: "#0a66c2",
+      bg: "#060f1e",
+      border: "#0a1e40",
+      url: `https://www.linkedin.com/search/results/people/?keywords=${encodedName}`,
+      desc: `LinkedIn profiles for ${personName}`,
+    },
+    {
+      icon: <Search size={12} />,
+      label: "Google Images",
+      color: "#34a853",
+      bg: "#061510",
+      border: "#0a2a1a",
+      url: `https://www.google.com/search?q=${encodedName}&tbm=isch`,
+      desc: `Image results for ${personName}`,
+    },
+    {
+      icon: <Phone size={12} />,
+      label: "Truecaller Lookup",
+      color: "#e53935",
+      bg: "#1a0810",
+      border: "#4a0e0e",
+      url: `https://www.truecaller.com/search/in/${encodedMobile.replace(/%2B91/g, "")}`,
+      desc: `Phone lookup: ${personMobile}`,
+    },
+    {
+      icon: <Youtube size={12} />,
+      label: "YouTube News",
+      color: "#ff0000",
+      bg: "#1a0800",
+      border: "#4a1400",
+      url: `https://www.youtube.com/results?search_query=${encodedName}+news`,
+      desc: `Video reports about ${personName}`,
+    },
+  ];
+
+  const panelStyle: React.CSSProperties = {
+    background: "#060c16",
+    border: "1px solid #1e3a5f",
+    borderTop: "2px solid #00e676",
+    borderRadius: 10,
+    padding: "20px 20px 16px",
+    marginTop: 24,
+  };
+
+  const headerStyle: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 18,
+  };
+
+  const sectionHeadStyle: React.CSSProperties = {
+    color: "#00e676",
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: 2,
+    marginBottom: 10,
+    marginTop: 0,
+    borderBottom: "1px solid #112a1f",
+    paddingBottom: 6,
+  };
+
+  return (
+    <div style={panelStyle} data-ocid="search.internet.panel">
+      {/* Header */}
+      <div style={headerStyle}>
+        <span
+          style={{
+            display: "inline-block",
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            background: "#00e676",
+            boxShadow: "0 0 6px #00e676, 0 0 12px #00c85380",
+            animation: "pulse 1.5s ease-in-out infinite",
+            flexShrink: 0,
+          }}
+        />
+        <Wifi size={14} style={{ color: "#00e676" }} />
+        <span
+          style={{
+            color: "#00e676",
+            fontWeight: 900,
+            fontSize: 12,
+            letterSpacing: 3,
+          }}
+        >
+          LIVE INTERNET DATA
+        </span>
+        <span
+          style={{
+            marginLeft: "auto",
+            background: "#0a2a1a",
+            border: "1px solid #00e676",
+            color: "#00e676",
+            fontSize: 9,
+            fontWeight: 700,
+            letterSpacing: 1,
+            padding: "2px 8px",
+            borderRadius: 4,
+          }}
+        >
+          OSINT SCAN
+        </span>
+      </div>
+
+      {/* Wikipedia Section */}
+      <div style={{ marginBottom: 18 }}>
+        <p style={sectionHeadStyle}>🌐 WIKIPEDIA INTELLIGENCE</p>
+        {wikiLoading ? (
+          <div
+            style={{
+              background: "#0a1628",
+              border: "1px solid #1e3a5f",
+              borderRadius: 8,
+              padding: "14px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <div
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: "50%",
+                background: "#1e3a5f",
+                boxShadow: "0 0 8px #00e676",
+                animation: "pulse 0.8s ease-in-out infinite",
+                flexShrink: 0,
+              }}
+            />
+            <span
+              style={{
+                color: "#7e8aa0",
+                fontSize: 12,
+                letterSpacing: 1,
+              }}
+            >
+              SCANNING INTERNET FOR{" "}
+              <span style={{ color: "#00e676", fontWeight: 700 }}>
+                {personName.toUpperCase()}
+              </span>
+              ...
+            </span>
+          </div>
+        ) : wikiError ? (
+          <div
+            style={{
+              background: "#0a1020",
+              border: "1px solid #1e3a5f",
+              borderRadius: 8,
+              padding: "12px 14px",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <WifiOff size={14} style={{ color: "#4a6080", flexShrink: 0 }} />
+            <span style={{ color: "#4a6080", fontSize: 12 }}>{wikiError}</span>
+          </div>
+        ) : wikiData ? (
+          <div
+            style={{
+              background: "#0a1628",
+              border: "1px solid #1e3a5f",
+              borderRadius: 8,
+              padding: "14px 16px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                marginBottom: 10,
+              }}
+            >
+              {wikiData.thumbnail?.source && (
+                <img
+                  src={wikiData.thumbnail.source}
+                  alt={wikiData.title}
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 6,
+                    objectFit: "cover",
+                    border: "1px solid #1e3a5f",
+                    flexShrink: 0,
+                  }}
+                />
+              )}
+              <div>
+                <div
+                  style={{
+                    color: "#42a5f5",
+                    fontWeight: 700,
+                    fontSize: 13,
+                    marginBottom: 4,
+                  }}
+                >
+                  {wikiData.title}
+                </div>
+                <div
+                  style={{
+                    color: "#a7b1c2",
+                    fontSize: 11,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {wikiData.extract.length > 300
+                    ? `${wikiData.extract.slice(0, 300)}...`
+                    : wikiData.extract}
+                </div>
+              </div>
+            </div>
+            {wikiData.content_urls?.desktop?.page && (
+              <a
+                href={wikiData.content_urls.desktop.page}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 5,
+                  background: "#112230",
+                  border: "1px solid #1e3a5f",
+                  borderRadius: 6,
+                  padding: "4px 12px",
+                  color: "#42a5f5",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  letterSpacing: 1,
+                }}
+              >
+                <Globe size={10} />
+                READ FULL ARTICLE ON WIKIPEDIA
+                <ExternalLink size={9} />
+              </a>
+            )}
+          </div>
+        ) : null}
+      </div>
+
+      {/* Quick Internet Search Links */}
+      <div>
+        <p style={sectionHeadStyle}>🔎 INTERNET SEARCH LINKS</p>
+        {!linksVisible ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              gap: 6,
+            }}
+          >
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                style={{
+                  height: 48,
+                  background: "#0a1020",
+                  borderRadius: 6,
+                  border: "1px solid #1e2d42",
+                  animation: "pulse 1.2s ease-in-out infinite",
+                  animationDelay: `${i * 0.1}s`,
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              gap: 6,
+            }}
+          >
+            {quickLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  background: link.bg,
+                  border: `1px solid ${link.border}`,
+                  borderRadius: 8,
+                  padding: "10px 10px 8px",
+                  textDecoration: "none",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 3,
+                  transition: "border-color 0.2s, transform 0.1s",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
+                  }}
+                >
+                  <span style={{ color: link.color }}>{link.icon}</span>
+                  <span
+                    style={{
+                      color: link.color,
+                      fontSize: 10,
+                      fontWeight: 700,
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    {link.label}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    color: "#4a6080",
+                    fontSize: 9,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {link.desc}
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Footer note */}
+      <div
+        style={{
+          marginTop: 14,
+          paddingTop: 12,
+          borderTop: "1px solid #0d1f30",
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+        }}
+      >
+        <Globe size={9} style={{ color: "#2a4060" }} />
+        <span style={{ color: "#2a4060", fontSize: 9 }}>
+          Live data sourced from public internet — Wikipedia &amp; search
+          engines. Not stored by this platform.
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -1120,6 +1561,11 @@ function DetailCard({
           </div>
         </div>
       )}
+      {/* Live Internet Data Panel */}
+      <InternetSearchPanel
+        personName={result.name}
+        personMobile={result.mobile}
+      />
     </div>
   );
 }
