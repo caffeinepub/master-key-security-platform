@@ -103,8 +103,23 @@ const recentActivity = [
   },
 ];
 
+const TREND_DATA = [
+  { month: "Jan", val: 40 },
+  { month: "Feb", val: 65 },
+  { month: "Mar", val: 45 },
+  { month: "Apr", val: 80 },
+  { month: "May", val: 55 },
+  { month: "Jun", val: 90 },
+  { month: "Jul", val: 70 },
+  { month: "Aug", val: 95 },
+  { month: "Sep", val: 60 },
+  { month: "Oct", val: 85 },
+  { month: "Nov", val: 75 },
+  { month: "Dec", val: 100 },
+];
+
 function StatusBadge({ status }: { status: string }) {
-  if (status === "criminal") {
+  if (status === "criminal")
     return (
       <span
         className="status-criminal"
@@ -119,8 +134,7 @@ function StatusBadge({ status }: { status: string }) {
         🚨 CRIMINAL
       </span>
     );
-  }
-  if (status === "suspicious") {
+  if (status === "suspicious")
     return (
       <span
         className="status-suspicious"
@@ -135,7 +149,6 @@ function StatusBadge({ status }: { status: string }) {
         ⚠️ SUSPICIOUS
       </span>
     );
-  }
   return (
     <span
       className="status-normal"
@@ -155,7 +168,6 @@ function StatusBadge({ status }: { status: string }) {
 export default function DashboardPage() {
   return (
     <div style={{ padding: "32px 24px", maxWidth: 1200, margin: "0 auto" }}>
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1
@@ -177,8 +189,7 @@ export default function DashboardPage() {
           className="flex items-center gap-2"
           style={{ color: "#7e8aa0", fontSize: 12 }}
         >
-          <Clock size={14} />
-          Last updated: just now
+          <Clock size={14} /> Last updated: just now
         </div>
       </div>
 
@@ -375,6 +386,7 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-2">
               <Link to="/search">
                 <button
+                  type="button"
                   className="btn-danger"
                   style={{
                     width: "100%",
@@ -394,6 +406,7 @@ export default function DashboardPage() {
               </Link>
               <Link to="/admin">
                 <button
+                  type="button"
                   style={{
                     width: "100%",
                     padding: "10px",
@@ -416,6 +429,7 @@ export default function DashboardPage() {
               </Link>
               <Link to="/reports">
                 <button
+                  type="button"
                   style={{
                     width: "100%",
                     padding: "10px",
@@ -460,8 +474,7 @@ export default function DashboardPage() {
                 gap: 6,
               }}
             >
-              <AlertTriangle size={14} />
-              ACTIVE CRIMINAL ALERTS
+              <AlertTriangle size={14} /> ACTIVE CRIMINAL ALERTS
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
@@ -519,12 +532,12 @@ export default function DashboardPage() {
               <TrendingUp size={14} style={{ color: "#4caf50" }} /> SEARCH TREND
             </h2>
             <div className="flex items-end gap-2" style={{ height: 60 }}>
-              {[40, 65, 45, 80, 55, 90, 70, 95, 60, 85, 75, 100].map((h, i) => (
+              {TREND_DATA.map((d, i) => (
                 <div
-                  key={i}
+                  key={d.month}
                   style={{
                     flex: 1,
-                    height: `${h}%`,
+                    height: `${d.val}%`,
                     background:
                       "linear-gradient(180deg, #e53935 0%, #7f0000 100%)",
                     borderRadius: "2px 2px 0 0",

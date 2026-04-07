@@ -73,6 +73,71 @@ const INITIAL_USERS: UserRecord[] = [
   },
 ];
 
+const FORM_FIELDS = [
+  {
+    key: "name" as const,
+    label: "FULL NAME",
+    placeholder: "Full legal name",
+    type: "text",
+  },
+  {
+    key: "mobile" as const,
+    label: "MOBILE NUMBER",
+    placeholder: "+1 (555) 000-0000",
+    type: "tel",
+  },
+  {
+    key: "address" as const,
+    label: "ADDRESS",
+    placeholder: "Full residential address",
+    type: "text",
+  },
+  {
+    key: "accessCode" as const,
+    label: "ACCESS CODE (leave blank to auto-generate)",
+    placeholder: "e.g. MK-1234",
+    type: "text",
+  },
+];
+
+const ACTIVITY_LOGS = [
+  {
+    id: "AL-001",
+    action: "User added",
+    by: "Admin",
+    detail: "Marcus T. Thompson added",
+    time: "2026-01-12 09:12",
+  },
+  {
+    id: "AL-002",
+    action: "Status changed",
+    by: "Admin",
+    detail: "Sarah Chen: normal → suspicious",
+    time: "2026-02-06 14:30",
+  },
+  {
+    id: "AL-003",
+    action: "Access code reset",
+    by: "Admin",
+    detail: "James Williams — new code issued",
+    time: "2026-02-20 11:05",
+  },
+  {
+    id: "AL-004",
+    action: "Search flagged",
+    by: "System",
+    detail: "Face match 97% — criminal alert triggered",
+    time: "2026-03-15 16:42",
+  },
+  {
+    id: "AL-005",
+    action: "User deleted",
+    by: "Admin",
+    detail: "Record #0092 purged",
+    time: "2026-03-28 10:00",
+  },
+];
+
 function StatusBadge({ status }: { status: UserStatus }) {
   const styles: Record<UserStatus, React.CSSProperties> = {
     criminal: {
@@ -121,9 +186,6 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<"users" | "logs" | "add">("users");
   const [editUser, setEditUser] = useState<UserRecord | null>(null);
-  const [_showAdd, setShowAdd] = useState(false);
-
-  // Add user form
   const [form, setForm] = useState({
     name: "",
     mobile: "",
@@ -177,7 +239,6 @@ export default function AdminPage() {
       status: "normal",
       accessCode: "",
     });
-    setShowAdd(false);
     setActiveTab("users");
     toast.success("User record added successfully");
   };
@@ -192,44 +253,6 @@ export default function AdminPage() {
     fontSize: 13,
     outline: "none",
   };
-
-  const ACTIVITY_LOGS = [
-    {
-      id: "AL-001",
-      action: "User added",
-      by: "Admin",
-      detail: "Marcus T. Thompson added",
-      time: "2026-01-12 09:12",
-    },
-    {
-      id: "AL-002",
-      action: "Status changed",
-      by: "Admin",
-      detail: "Sarah Chen: normal → suspicious",
-      time: "2026-02-06 14:30",
-    },
-    {
-      id: "AL-003",
-      action: "Access code reset",
-      by: "Admin",
-      detail: "James Williams — new code issued",
-      time: "2026-02-20 11:05",
-    },
-    {
-      id: "AL-004",
-      action: "Search flagged",
-      by: "System",
-      detail: "Face match 97% — criminal alert triggered",
-      time: "2026-03-15 16:42",
-    },
-    {
-      id: "AL-005",
-      action: "User deleted",
-      by: "Admin",
-      detail: "Record #0092 purged",
-      time: "2026-03-28 10:00",
-    },
-  ];
 
   return (
     <div style={{ padding: "32px 24px", maxWidth: 1100, margin: "0 auto" }}>
@@ -252,6 +275,7 @@ export default function AdminPage() {
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={() => toast.info("Export initiated — PDF generating...")}
             style={{
               background: "transparent",
@@ -270,6 +294,7 @@ export default function AdminPage() {
             <Download size={12} /> EXPORT PDF
           </button>
           <button
+            type="button"
             onClick={() => toast.info("Export initiated — Excel generating...")}
             style={{
               background: "transparent",
@@ -295,6 +320,7 @@ export default function AdminPage() {
         {(["users", "add", "logs"] as const).map((t) => (
           <button
             key={t}
+            type="button"
             onClick={() => setActiveTab(t)}
             style={
               {
@@ -478,6 +504,7 @@ export default function AdminPage() {
                     <td style={{ padding: "12px" }}>
                       <div className="flex items-center gap-2">
                         <button
+                          type="button"
                           onClick={() =>
                             setEditUser(editUser?.id === u.id ? null : u)
                           }
@@ -494,6 +521,7 @@ export default function AdminPage() {
                           <Edit size={12} />
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleResetCode(u.id)}
                           style={{
                             background: "#1e2d42",
@@ -508,6 +536,7 @@ export default function AdminPage() {
                           <RotateCcw size={12} />
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleDelete(u.id)}
                           style={{
                             background: "#3a1216",
@@ -549,36 +578,10 @@ export default function AdminPage() {
             onSubmit={handleAddUser}
             style={{ display: "flex", flexDirection: "column", gap: 16 }}
           >
-            {(
-              [
-                {
-                  key: "name",
-                  label: "FULL NAME",
-                  placeholder: "Full legal name",
-                  type: "text",
-                },
-                {
-                  key: "mobile",
-                  label: "MOBILE NUMBER",
-                  placeholder: "+1 (555) 000-0000",
-                  type: "tel",
-                },
-                {
-                  key: "address",
-                  label: "ADDRESS",
-                  placeholder: "Full residential address",
-                  type: "text",
-                },
-                {
-                  key: "accessCode",
-                  label: "ACCESS CODE (leave blank to auto-generate)",
-                  placeholder: "e.g. MK-1234",
-                  type: "text",
-                },
-              ] as const
-            ).map((f) => (
+            {FORM_FIELDS.map((f) => (
               <div key={f.key}>
                 <label
+                  htmlFor={`add-${f.key}`}
                   style={{
                     color: "#7e8aa0",
                     fontSize: 10,
@@ -591,6 +594,7 @@ export default function AdminPage() {
                   {f.label}
                 </label>
                 <input
+                  id={`add-${f.key}`}
                   type={f.type}
                   value={form[f.key]}
                   onChange={(e) =>
@@ -604,6 +608,7 @@ export default function AdminPage() {
             ))}
             <div>
               <label
+                htmlFor="add-status"
                 style={{
                   color: "#7e8aa0",
                   fontSize: 10,
@@ -616,6 +621,7 @@ export default function AdminPage() {
                 STATUS
               </label>
               <select
+                id="add-status"
                 value={form.status}
                 onChange={(e) =>
                   setForm((prev) => ({

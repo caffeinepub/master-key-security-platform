@@ -2,9 +2,15 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
+  ExternalLink,
+  Facebook,
+  Globe,
+  Instagram,
+  Mail,
   MapPin,
   Phone,
   Search,
+  Twitter,
   Upload,
   User,
   X,
@@ -12,48 +18,302 @@ import {
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
-const MOCK_USERS = [
+// ─── Simulated Internet-Wide Database ───────────────────────────────────────
+const FULL_DATABASE = [
   {
     id: 1,
     name: "Marcus T. Thompson",
     mobile: "+1-555-0124",
+    altNumbers: ["+1-555-9901", "+1-800-0124"],
     address: "247 East Harbor Blvd, Apt 3B, Los Angeles, CA 90012",
-    status: "criminal",
+    email: "m.thompson.la@gmail.com",
+    dob: "1984-06-15",
+    nationality: "American",
+    status: "criminal" as const,
     flagReason:
       "Warrant active: Armed robbery, Level 4. Multiple prior convictions.",
-    matchPct: null,
+    criminalHistory: [
+      {
+        year: "2019",
+        crime: "Armed Robbery",
+        court: "LA Superior Court",
+        verdict: "Convicted",
+      },
+      {
+        year: "2021",
+        crime: "Assault & Battery",
+        court: "LA Superior Court",
+        verdict: "Convicted",
+      },
+      {
+        year: "2024",
+        crime: "Warrant Issued — Assault",
+        court: "Federal",
+        verdict: "Pending",
+      },
+    ],
+    social: {
+      facebook: "marcus.t.thompson.la",
+      instagram: "@marcus_la_official",
+      twitter: "@mthompson_la",
+    },
+    lastSeenLocations: [
+      {
+        place: "Los Angeles, CA",
+        date: "2026-03-28",
+        source: "Google Maps Check-in",
+      },
+      { place: "Las Vegas, NV", date: "2026-03-15", source: "Facebook Post" },
+      { place: "San Diego, CA", date: "2026-02-20", source: "Instagram Tag" },
+    ],
+    internetSources: [
+      {
+        site: "Court Records LA",
+        url: "#",
+        snippet:
+          "Marcus T. Thompson, Docket #LA-2024-4821, Warrant active for aggravated assault...",
+      },
+      {
+        site: "Facebook",
+        url: "#",
+        snippet:
+          "Profile found: Marcus Thompson, Los Angeles. 342 friends. Last active 3 days ago.",
+      },
+      {
+        site: "LinkedIn",
+        url: "#",
+        snippet:
+          "Marcus Thompson — Former Security Guard at Harbor Corp (2018–2020)",
+      },
+      {
+        site: "Instagram",
+        url: "#",
+        snippet:
+          "@marcus_la_official — 892 followers. Recent posts tagged in Las Vegas.",
+      },
+    ],
+    vehicleInfo: "2019 Black Toyota Camry — CA Plate: 7XYZ-321",
+    associates: [
+      "James R. (Accomplice — Docket #LA-2022)",
+      "Unknown Female — alias 'Red'",
+    ],
   },
   {
     id: 2,
     name: "Sarah L. Chen",
     mobile: "+1-555-0198",
+    altNumbers: ["+1-555-7721"],
     address: "88 Riverview Dr, San Francisco, CA 94110",
-    status: "suspicious",
+    email: "sarah.chen.sf@protonmail.com",
+    dob: "1991-11-02",
+    nationality: "American (Chinese origin)",
+    status: "suspicious" as const,
     flagReason: "Under investigation. Linked to financial fraud network.",
-    matchPct: null,
+    criminalHistory: [
+      {
+        year: "2023",
+        crime: "Wire Fraud Investigation",
+        court: "Federal",
+        verdict: "Under Review",
+      },
+    ],
+    social: {
+      facebook: "sarah.lchen.sf",
+      instagram: "@sarahchen_bay",
+      twitter: "@slchen_finance",
+    },
+    lastSeenLocations: [
+      {
+        place: "San Francisco, CA",
+        date: "2026-04-02",
+        source: "LinkedIn Activity",
+      },
+      { place: "New York, NY", date: "2026-03-10", source: "Twitter Post" },
+    ],
+    internetSources: [
+      {
+        site: "Federal Court Records",
+        url: "#",
+        snippet:
+          "Sarah L. Chen — Case #FED-2023-7721, Wire fraud investigation ongoing...",
+      },
+      {
+        site: "LinkedIn",
+        url: "#",
+        snippet:
+          "Sarah Chen — Financial Analyst at BayTech Investments. 500+ connections.",
+      },
+      {
+        site: "Twitter",
+        url: "#",
+        snippet:
+          "@slchen_finance — Account suspended. Last tweet flagged for suspicious links.",
+      },
+    ],
+    vehicleInfo: "2022 Silver Honda Civic — CA Plate: 9ABC-112",
+    associates: ["David K. (Co-accused in fraud)", "Unknown offshore entity"],
   },
   {
     id: 3,
     name: "James O. Williams",
     mobile: "+1-555-0201",
+    altNumbers: [],
     address: "1502 Maple Street, Chicago, IL 60601",
-    status: "normal",
+    email: "james.williams.chi@outlook.com",
+    dob: "1979-03-20",
+    nationality: "American",
+    status: "normal" as const,
     flagReason: null,
-    matchPct: null,
+    criminalHistory: [],
+    social: {
+      facebook: "james.o.williams.chi",
+      instagram: "@jameswilliams_chi",
+      twitter: "",
+    },
+    lastSeenLocations: [
+      { place: "Chicago, IL", date: "2026-04-04", source: "Facebook Check-in" },
+    ],
+    internetSources: [
+      {
+        site: "LinkedIn",
+        url: "#",
+        snippet:
+          "James Williams — Software Engineer at Midwest Solutions. No criminal record found.",
+      },
+      {
+        site: "Facebook",
+        url: "#",
+        snippet:
+          "James O. Williams, Chicago. Active community member. 1.2K friends.",
+      },
+    ],
+    vehicleInfo: "2020 Blue Ford F-150 — IL Plate: IL-4432",
+    associates: [],
   },
 ];
 
-type SearchResult = (typeof MOCK_USERS)[0] & { matchPct?: number | null };
+type DbRecord = (typeof FULL_DATABASE)[0];
+type SearchResult = DbRecord & { matchPct?: number; matchSource?: string };
 
-const DISCLAIMER =
-  "This platform only shows data of registered users. Unauthorized use, stalking, or misuse is punishable under law. Admin may share user activity with law enforcement authorities.";
+const FACE_MATCH_SOURCES = [
+  {
+    source: "Facebook",
+    detail: "Profile photo matched on public account 'marcus.t.thompson.la'",
+    confidence: 97,
+    date: "2026-04-01",
+  },
+  {
+    source: "Instagram",
+    detail:
+      "Photo matched in @marcus_la_official story — tagged in Las Vegas, NV",
+    confidence: 94,
+    date: "2026-03-28",
+  },
+  {
+    source: "CCTV Database",
+    detail:
+      "Face matched in Harbor District CCTV footage — 2026-03-28 11:42 AM",
+    confidence: 91,
+    date: "2026-03-28",
+  },
+  {
+    source: "Court Records",
+    detail: "Mugshot on file — LA Superior Court Docket #LA-2024-4821",
+    confidence: 99,
+    date: "2024-08-15",
+  },
+  {
+    source: "LinkedIn",
+    detail: "Profile photo match — Former employee page still active",
+    confidence: 88,
+    date: "2026-02-10",
+  },
+];
 
-function ResultCard({
+function StatusBadge({ status }: { status: string }) {
+  if (status === "criminal")
+    return (
+      <span
+        style={{
+          background: "#3a1216",
+          border: "1px solid #c62828",
+          color: "#ff5252",
+          padding: "3px 10px",
+          borderRadius: 12,
+          fontSize: 11,
+          fontWeight: 700,
+        }}
+      >
+        🚨 CRIMINAL
+      </span>
+    );
+  if (status === "suspicious")
+    return (
+      <span
+        style={{
+          background: "#2a1f0a",
+          border: "1px solid #f57f17",
+          color: "#ffb300",
+          padding: "3px 10px",
+          borderRadius: 12,
+          fontSize: 11,
+          fontWeight: 700,
+        }}
+      >
+        ⚠️ SUSPICIOUS
+      </span>
+    );
+  return (
+    <span
+      style={{
+        background: "#0a2010",
+        border: "1px solid #2e7d32",
+        color: "#4caf50",
+        padding: "3px 10px",
+        borderRadius: 12,
+        fontSize: 11,
+        fontWeight: 700,
+      }}
+    >
+      ✅ NORMAL
+    </span>
+  );
+}
+
+function DetailCard({
   result,
   onClose,
-}: { result: SearchResult; onClose: () => void }) {
+  faceMatchSources,
+}: {
+  result: SearchResult;
+  onClose: () => void;
+  faceMatchSources?: typeof FACE_MATCH_SOURCES;
+}) {
   const isCriminal = result.status === "criminal";
   const isSuspicious = result.status === "suspicious";
+  const sectionHead: React.CSSProperties = {
+    color: "#e53935",
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: 2,
+    marginBottom: 10,
+    marginTop: 0,
+    borderBottom: "1px solid #2a3648",
+    paddingBottom: 6,
+  };
+  const row: React.CSSProperties = {
+    display: "flex",
+    gap: 8,
+    alignItems: "flex-start",
+    marginBottom: 6,
+  };
+  const label: React.CSSProperties = {
+    color: "#7e8aa0",
+    fontSize: 11,
+    minWidth: 110,
+    fontWeight: 600,
+  };
+  const val: React.CSSProperties = { color: "#a7b1c2", fontSize: 12 };
 
   return (
     <div
@@ -76,6 +336,7 @@ function ResultCard({
       className={isCriminal ? "criminal-alert" : ""}
     >
       <button
+        type="button"
         onClick={onClose}
         style={{
           position: "absolute",
@@ -90,6 +351,7 @@ function ResultCard({
         <X size={16} />
       </button>
 
+      {/* Alert Banner */}
       {isCriminal && (
         <div
           className="slide-in alert-blink"
@@ -98,7 +360,7 @@ function ResultCard({
             border: "1px solid #e53935",
             borderRadius: 8,
             padding: "10px 16px",
-            marginBottom: 16,
+            marginBottom: 20,
             display: "flex",
             alignItems: "center",
             gap: 10,
@@ -125,7 +387,6 @@ function ResultCard({
           </div>
         </div>
       )}
-
       {isSuspicious && (
         <div
           style={{
@@ -133,7 +394,7 @@ function ResultCard({
             border: "1px solid #f57f17",
             borderRadius: 8,
             padding: "10px 16px",
-            marginBottom: 16,
+            marginBottom: 20,
             display: "flex",
             alignItems: "center",
             gap: 10,
@@ -143,134 +404,345 @@ function ResultCard({
             size={16}
             style={{ color: "#ffb300", flexShrink: 0 }}
           />
-          <div>
-            <div
-              style={{
-                color: "#ffb300",
-                fontWeight: 700,
-                fontSize: 13,
-                letterSpacing: 1,
-              }}
-            >
-              ⚠️ SUSPICIOUS RECORD
-            </div>
-            <div style={{ color: "#ffd54f", fontSize: 12, marginTop: 2 }}>
-              {result.flagReason}
-            </div>
+          <div style={{ color: "#ffb300", fontWeight: 700, fontSize: 13 }}>
+            ⚠️ SUSPICIOUS — {result.flagReason}
           </div>
         </div>
       )}
 
-      <div className="flex items-start gap-4">
-        {/* Avatar */}
-        <div
-          style={{
-            width: 64,
-            height: 64,
-            borderRadius: 10,
-            background: "#111a28",
-            border: `2px solid ${isCriminal ? "#c62828" : isSuspicious ? "#f57f17" : "#2a3648"}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <User
-            size={28}
-            style={{
-              color: isCriminal
-                ? "#e53935"
-                : isSuspicious
-                  ? "#ffb300"
-                  : "#7e8aa0",
-            }}
-          />
-        </div>
-
-        <div style={{ flex: 1 }}>
-          <div className="flex items-center gap-3 flex-wrap">
-            <h3
-              style={{
-                color: "#f2f5fa",
-                fontWeight: 800,
-                fontSize: 18,
-                margin: 0,
-              }}
-            >
-              {result.name}
-            </h3>
-            {result.matchPct && (
-              <span
+      {/* Face match sources */}
+      {faceMatchSources && (
+        <div style={{ marginBottom: 20 }}>
+          <p style={sectionHead}>
+            📸 FACE MATCH FOUND ON ({faceMatchSources.length} SOURCES)
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {faceMatchSources.map((fm) => (
+              <div
+                key={fm.source}
                 style={{
-                  background: "#1a3a1a",
-                  border: "1px solid #2e7d32",
-                  color: "#4caf50",
-                  padding: "2px 10px",
-                  borderRadius: 12,
-                  fontSize: 11,
-                  fontWeight: 700,
+                  background: "#111a28",
+                  border: "1px solid #2a3648",
+                  borderRadius: 8,
+                  padding: "10px 14px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  gap: 12,
                 }}
               >
-                FACE MATCH: {result.matchPct}%
-              </span>
-            )}
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      color: "#f2f5fa",
+                      fontWeight: 700,
+                      fontSize: 12,
+                      marginBottom: 2,
+                    }}
+                  >
+                    {fm.source}
+                  </div>
+                  <div
+                    style={{ color: "#a7b1c2", fontSize: 11, lineHeight: 1.5 }}
+                  >
+                    {fm.detail}
+                  </div>
+                  <div style={{ color: "#7e8aa0", fontSize: 10, marginTop: 3 }}>
+                    Date: {fm.date}
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background:
+                      fm.confidence >= 95
+                        ? "#3a1216"
+                        : fm.confidence >= 90
+                          ? "#2a1f0a"
+                          : "#0a2010",
+                    border: `1px solid ${fm.confidence >= 95 ? "#c62828" : fm.confidence >= 90 ? "#f57f17" : "#2e7d32"}`,
+                    color:
+                      fm.confidence >= 95
+                        ? "#ff5252"
+                        : fm.confidence >= 90
+                          ? "#ffb300"
+                          : "#4caf50",
+                    padding: "3px 10px",
+                    borderRadius: 10,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    whiteSpace: "nowrap" as const,
+                  }}
+                >
+                  {fm.confidence}% MATCH
+                </span>
+              </div>
+            ))}
           </div>
+        </div>
+      )}
 
-          <div className="flex flex-col gap-2 mt-3">
-            <div className="flex items-center gap-2">
-              <Phone size={13} style={{ color: "#7e8aa0", flexShrink: 0 }} />
-              <span style={{ color: "#a7b1c2", fontSize: 13 }}>
-                {result.mobile}
-              </span>
-            </div>
-            <div className="flex items-start gap-2">
-              <MapPin
-                size={13}
-                style={{ color: "#7e8aa0", flexShrink: 0, marginTop: 2 }}
-              />
-              <span style={{ color: "#a7b1c2", fontSize: 13 }}>
-                {result.address}
-              </span>
-            </div>
+      {/* Identity */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 20,
+          marginBottom: 20,
+        }}
+      >
+        <div>
+          <p style={sectionHead}>👤 IDENTITY</p>
+          <div style={row}>
+            <span style={label}>Full Name</span>
+            <span style={val}>{result.name}</span>
           </div>
+          <div style={row}>
+            <span style={label}>Date of Birth</span>
+            <span style={val}>{result.dob}</span>
+          </div>
+          <div style={row}>
+            <span style={label}>Nationality</span>
+            <span style={val}>{result.nationality}</span>
+          </div>
+          <div style={row}>
+            <span style={label}>Status</span>
+            <StatusBadge status={result.status} />
+          </div>
+        </div>
+        <div>
+          <p style={sectionHead}>📞 CONTACT</p>
+          <div style={row}>
+            <Phone size={11} style={{ color: "#7e8aa0", marginTop: 2 }} />
+            <span style={val}>{result.mobile}</span>
+          </div>
+          {result.altNumbers.map((n) => (
+            <div key={n} style={row}>
+              <Phone size={11} style={{ color: "#2a3648", marginTop: 2 }} />
+              <span style={{ ...val, color: "#7e8aa0" }}>{n} (alt)</span>
+            </div>
+          ))}
+          <div style={row}>
+            <Mail size={11} style={{ color: "#7e8aa0", marginTop: 2 }} />
+            <span style={val}>{result.email}</span>
+          </div>
+          <div style={row}>
+            <MapPin size={11} style={{ color: "#7e8aa0", marginTop: 2 }} />
+            <span style={val}>{result.address}</span>
+          </div>
+        </div>
+      </div>
 
-          <div className="flex items-center gap-3 mt-3">
+      {/* Vehicle */}
+      <div style={{ marginBottom: 20 }}>
+        <p style={sectionHead}>🚗 VEHICLE INFO</p>
+        <div
+          style={{
+            ...val,
+            background: "#111a28",
+            border: "1px solid #2a3648",
+            borderRadius: 6,
+            padding: "8px 12px",
+            fontFamily: "monospace",
+          }}
+        >
+          {result.vehicleInfo}
+        </div>
+      </div>
+
+      {/* Social Media */}
+      <div style={{ marginBottom: 20 }}>
+        <p style={sectionHead}>🌐 SOCIAL MEDIA PRESENCE</p>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" as const }}>
+          {result.social.facebook && (
             <span
               style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 4,
-                padding: "4px 12px",
-                borderRadius: 12,
+                background: "#1a2433",
+                border: "1px solid #2a3648",
+                color: "#a7b1c2",
+                padding: "5px 12px",
+                borderRadius: 8,
                 fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: 1,
-                ...(isCriminal
-                  ? {
-                      background: "#3a1216",
-                      border: "1px solid #c62828",
-                      color: "#ff5252",
-                    }
-                  : isSuspicious
-                    ? {
-                        background: "#2a1f0a",
-                        border: "1px solid #f57f17",
-                        color: "#ffb300",
-                      }
-                    : {
-                        background: "#0a2010",
-                        border: "1px solid #2e7d32",
-                        color: "#4caf50",
-                      }),
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
               }}
             >
-              {isCriminal && <AlertTriangle size={11} />}
-              {isSuspicious && <AlertTriangle size={11} />}
-              {!isCriminal && !isSuspicious && <CheckCircle size={11} />}
-              {result.status.toUpperCase()}
+              <Facebook size={12} /> {result.social.facebook}
             </span>
+          )}
+          {result.social.instagram && (
+            <span
+              style={{
+                background: "#1a2433",
+                border: "1px solid #2a3648",
+                color: "#a7b1c2",
+                padding: "5px 12px",
+                borderRadius: 8,
+                fontSize: 11,
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
+              <Instagram size={12} /> {result.social.instagram}
+            </span>
+          )}
+          {result.social.twitter && (
+            <span
+              style={{
+                background: "#1a2433",
+                border: "1px solid #2a3648",
+                color: "#a7b1c2",
+                padding: "5px 12px",
+                borderRadius: 8,
+                fontSize: 11,
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
+              <Twitter size={12} /> {result.social.twitter}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Last Seen Locations */}
+      <div style={{ marginBottom: 20 }}>
+        <p style={sectionHead}>📍 LAST SEEN LOCATIONS</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {result.lastSeenLocations.map((loc) => (
+            <div
+              key={`${loc.place}-${loc.date}`}
+              style={{
+                background: "#111a28",
+                border: "1px solid #2a3648",
+                borderRadius: 6,
+                padding: "8px 12px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <MapPin size={12} style={{ color: "#e53935" }} />
+                <span
+                  style={{ color: "#f2f5fa", fontSize: 12, fontWeight: 600 }}
+                >
+                  {loc.place}
+                </span>
+              </div>
+              <div style={{ textAlign: "right" as const }}>
+                <div style={{ color: "#a7b1c2", fontSize: 11 }}>{loc.date}</div>
+                <div style={{ color: "#7e8aa0", fontSize: 10 }}>
+                  {loc.source}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Criminal History */}
+      {result.criminalHistory.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <p style={sectionHead}>⚖️ CRIMINAL / LEGAL HISTORY</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {result.criminalHistory.map((c) => (
+              <div
+                key={`${c.year}-${c.crime}`}
+                style={{
+                  background: "#3a1216",
+                  border: "1px solid #7f1010",
+                  borderRadius: 6,
+                  padding: "8px 12px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <div
+                    style={{ color: "#ff8a80", fontSize: 12, fontWeight: 700 }}
+                  >
+                    {c.crime}
+                  </div>
+                  <div style={{ color: "#7e8aa0", fontSize: 10 }}>
+                    {c.court} — {c.year}
+                  </div>
+                </div>
+                <span
+                  style={{
+                    color: c.verdict === "Convicted" ? "#ff5252" : "#ffb300",
+                    fontSize: 11,
+                    fontWeight: 700,
+                  }}
+                >
+                  {c.verdict}
+                </span>
+              </div>
+            ))}
           </div>
+        </div>
+      )}
+
+      {/* Associates */}
+      {result.associates.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <p style={sectionHead}>🔗 KNOWN ASSOCIATES</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {result.associates.map((a) => (
+              <div
+                key={a}
+                style={{
+                  color: "#a7b1c2",
+                  fontSize: 12,
+                  padding: "4px 0",
+                  borderBottom: "1px solid #1e2d42",
+                }}
+              >
+                • {a}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Internet Sources */}
+      <div>
+        <p style={sectionHead}>🔍 INTERNET SEARCH RESULTS</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {result.internetSources.map((src) => (
+            <div
+              key={src.site}
+              style={{
+                background: "#111a28",
+                border: "1px solid #2a3648",
+                borderRadius: 8,
+                padding: "10px 14px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  marginBottom: 4,
+                }}
+              >
+                <Globe size={11} style={{ color: "#42a5f5" }} />
+                <span
+                  style={{ color: "#42a5f5", fontSize: 12, fontWeight: 700 }}
+                >
+                  {src.site}
+                </span>
+                <ExternalLink size={10} style={{ color: "#42a5f5" }} />
+              </div>
+              <div style={{ color: "#7e8aa0", fontSize: 11, lineHeight: 1.6 }}>
+                {src.snippet}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -281,6 +753,9 @@ export default function SearchPage() {
   const [tab, setTab] = useState<"mobile" | "face">("mobile");
   const [mobileQuery, setMobileQuery] = useState("");
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
+  const [faceMatchSources, setFaceMatchSources] = useState<
+    typeof FACE_MATCH_SOURCES | undefined
+  >(undefined);
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
   const [faceFile, setFaceFile] = useState<File | null>(null);
@@ -302,9 +777,12 @@ export default function SearchPage() {
     setLoading(true);
     setNotFound(false);
     setSearchResult(null);
+    setFaceMatchSources(undefined);
     setTimeout(() => {
-      const found = MOCK_USERS.find((u) =>
-        u.mobile.includes(mobileQuery.trim()),
+      const found = FULL_DATABASE.find(
+        (u) =>
+          u.mobile.includes(mobileQuery.trim()) ||
+          u.altNumbers.some((n) => n.includes(mobileQuery.trim())),
       );
       if (found) {
         setSearchResult(found);
@@ -320,7 +798,7 @@ export default function SearchPage() {
         toast.info("No registered record found for this number");
       }
       setLoading(false);
-    }, 1200);
+    }, 1400);
   };
 
   const handleFaceSearch = () => {
@@ -328,15 +806,19 @@ export default function SearchPage() {
     setLoading(true);
     setNotFound(false);
     setSearchResult(null);
+    setFaceMatchSources(undefined);
     setTimeout(() => {
-      // Simulate 97% match with first user (criminal for demo effect)
       const matched = {
-        ...MOCK_USERS[0],
+        ...FULL_DATABASE[0],
         matchPct: 97,
-      } as unknown as SearchResult;
+        matchSource: "Facebook / CCTV",
+      };
       setSearchResult(matched);
+      setFaceMatchSources(FACE_MATCH_SOURCES);
       logSearch(`Photo: ${faceFile.name}`, "Face Match", matched.status);
-      toast.error("🚨 Criminal match found — 97% confidence");
+      toast.error(
+        "🚨 Criminal face match found — 97% confidence across 5 sources",
+      );
       setLoading(false);
     }, 2000);
   };
@@ -353,7 +835,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div style={{ padding: "32px 24px", maxWidth: 900, margin: "0 auto" }}>
+    <div style={{ padding: "32px 24px", maxWidth: 960, margin: "0 auto" }}>
       <h1
         style={{
           color: "#f2f5fa",
@@ -366,7 +848,8 @@ export default function SearchPage() {
         SECURITY INTELLIGENCE SEARCH
       </h1>
       <p style={{ color: "#7e8aa0", fontSize: 13, marginBottom: 24 }}>
-        Locate and verify individuals within the registered network.
+        Full internet-wide identity verification and criminal record search
+        engine.
       </p>
 
       {/* Disclaimer */}
@@ -383,7 +866,9 @@ export default function SearchPage() {
         <p
           style={{ color: "#ff8a80", fontSize: 12, margin: 0, lineHeight: 1.6 }}
         >
-          <strong>⚠️ LEGAL NOTICE:</strong> {DISCLAIMER}
+          <strong>⚠️ LEGAL NOTICE:</strong> This platform only shows data of
+          registered users. Unauthorized use, stalking, or misuse is punishable
+          under law.
         </p>
       </div>
 
@@ -403,10 +888,12 @@ export default function SearchPage() {
           {(["mobile", "face"] as const).map((t) => (
             <button
               key={t}
+              type="button"
               onClick={() => {
                 setTab(t);
                 setSearchResult(null);
                 setNotFound(false);
+                setFaceMatchSources(undefined);
               }}
               style={{
                 padding: "10px",
@@ -460,7 +947,7 @@ export default function SearchPage() {
                   type="text"
                   value={mobileQuery}
                   onChange={(e) => setMobileQuery(e.target.value)}
-                  placeholder="Enter mobile number..."
+                  placeholder="Enter mobile number (e.g. +1-555-0124)"
                   style={{ ...inputStyle, paddingLeft: 36 }}
                 />
               </div>
@@ -480,13 +967,12 @@ export default function SearchPage() {
                   gap: 6,
                 }}
               >
-                <Search size={14} />
-                {loading ? "SEARCHING..." : "SEARCH"}
+                <Search size={14} /> {loading ? "SEARCHING..." : "SEARCH"}
               </button>
             </div>
             <p style={{ color: "#7e8aa0", fontSize: 11, marginTop: 8 }}>
-              Try: +1-555-0124 (Criminal), +1-555-0198 (Suspicious), +1-555-0201
-              (Normal)
+              Try: +1-555-0124 (Criminal) · +1-555-0198 (Suspicious) ·
+              +1-555-0201 (Normal)
             </p>
           </form>
         )}
@@ -494,41 +980,44 @@ export default function SearchPage() {
         {/* Face Match */}
         {tab === "face" && (
           <div>
-            <div
+            <button
+              type="button"
               onClick={() => fileInputRef.current?.click()}
               style={{
+                width: "100%",
                 border: "2px dashed #2a3648",
                 borderRadius: 10,
                 padding: 36,
                 textAlign: "center",
                 cursor: "pointer",
-                transition: "border-color 0.2s",
                 background: "#0f1928",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 8,
               }}
             >
-              <Upload
-                size={32}
-                style={{ color: "#7e8aa0", margin: "0 auto 12px" }}
-              />
+              <Upload size={32} style={{ color: "#7e8aa0" }} />
               <div style={{ color: "#a7b1c2", fontSize: 14, fontWeight: 600 }}>
                 {faceFile
                   ? faceFile.name
                   : "Click to upload photo for face match"}
               </div>
-              <div style={{ color: "#7e8aa0", fontSize: 12, marginTop: 4 }}>
-                JPG, PNG supported
+              <div style={{ color: "#7e8aa0", fontSize: 12 }}>
+                JPG, PNG supported — Cross-platform face match
               </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFaceFile(e.target.files?.[0] || null)}
-                style={{ display: "none" }}
-              />
-            </div>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFaceFile(e.target.files?.[0] || null)}
+              style={{ display: "none" }}
+            />
             {faceFile && (
               <div className="flex justify-end mt-3">
                 <button
+                  type="button"
                   onClick={handleFaceSearch}
                   disabled={loading}
                   className="btn-danger"
@@ -543,8 +1032,8 @@ export default function SearchPage() {
                     gap: 6,
                   }}
                 >
-                  <Search size={14} />
-                  {loading ? "ANALYZING FACE..." : "RUN FACE MATCH"}
+                  <Search size={14} />{" "}
+                  {loading ? "SCANNING ALL SOURCES..." : "RUN FACE MATCH"}
                 </button>
               </div>
             )}
@@ -553,11 +1042,11 @@ export default function SearchPage() {
                 <div
                   style={{ color: "#e53935", fontSize: 12, letterSpacing: 1 }}
                 >
-                  ANALYZING FACIAL BIOMETRICS...
+                  SCANNING: Facebook · Instagram · CCTV · Court DB · LinkedIn...
                 </div>
                 <div
                   style={{
-                    width: 200,
+                    width: 260,
                     height: 4,
                     background: "#1e2d42",
                     borderRadius: 2,
@@ -567,11 +1056,10 @@ export default function SearchPage() {
                 >
                   <div
                     style={{
-                      width: "60%",
+                      width: "70%",
                       height: "100%",
                       background: "linear-gradient(90deg, #c62828, #e53935)",
                       borderRadius: 2,
-                      animation: "accordion-down 0.5s ease infinite alternate",
                     }}
                   />
                 </div>
@@ -580,13 +1068,17 @@ export default function SearchPage() {
           </div>
         )}
 
-        {/* Result */}
         {searchResult && (
-          <ResultCard
+          <DetailCard
             result={searchResult}
-            onClose={() => setSearchResult(null)}
+            onClose={() => {
+              setSearchResult(null);
+              setFaceMatchSources(undefined);
+            }}
+            faceMatchSources={faceMatchSources}
           />
         )}
+
         {notFound && (
           <div
             style={{
@@ -627,13 +1119,12 @@ export default function SearchPage() {
               gap: 6,
             }}
           >
-            <Clock size={14} style={{ color: "#7e8aa0" }} />
-            MY SEARCH HISTORY
+            <Clock size={14} style={{ color: "#7e8aa0" }} /> MY SEARCH HISTORY
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {history.map((h, i) => (
+            {history.map((h) => (
               <div
-                key={i}
+                key={`${h.query}-${h.time}-${h.type}`}
                 style={{
                   display: "flex",
                   alignItems: "center",

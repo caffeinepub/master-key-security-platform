@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import { Toaster } from "./components/ui/sonner";
 import AboutPage from "./pages/AboutPage";
 import AdminPage from "./pages/AdminPage";
+import ApkInstallPage from "./pages/ApkInstallPage";
 import DashboardPage from "./pages/DashboardPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/apk-install" element={<ApkInstallPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />

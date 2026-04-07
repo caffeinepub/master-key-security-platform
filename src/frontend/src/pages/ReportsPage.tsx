@@ -95,24 +95,23 @@ export default function ReportsPage() {
         {(["submit", "list"] as const).map((t) => (
           <button
             key={t}
+            type="button"
             onClick={() => setTab(t)}
-            style={
-              {
-                padding: "8px 20px",
-                borderRadius: 8,
-                border: "none",
-                cursor: "pointer",
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: 1,
-                background:
-                  tab === t
-                    ? "linear-gradient(135deg, #c62828, #d32f2f)"
-                    : "#1a2433",
-                color: tab === t ? "white" : "#7e8aa0",
-                outline: tab === t ? "none" : "1px solid #2a3648",
-              } as React.CSSProperties
-            }
+            style={{
+              padding: "8px 20px",
+              borderRadius: 8,
+              border: "none",
+              cursor: "pointer",
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: 1,
+              background:
+                tab === t
+                  ? "linear-gradient(135deg, #c62828, #d32f2f)"
+                  : "#1a2433",
+              color: tab === t ? "white" : "#7e8aa0",
+              outline: tab === t ? "none" : "1px solid #2a3648",
+            }}
           >
             {t === "submit" ? "FILE REPORT" : "VIEW REPORTS"}
           </button>
@@ -148,6 +147,7 @@ export default function ReportsPage() {
                 . Authorities will review within 24 hours.
               </p>
               <button
+                type="button"
                 onClick={() => {
                   setSubmitted(false);
                   setForm({ mobile: "", description: "", location: "" });
@@ -204,6 +204,7 @@ export default function ReportsPage() {
               >
                 <div>
                   <label
+                    htmlFor="report-mobile"
                     style={{
                       color: "#7e8aa0",
                       fontSize: 10,
@@ -227,6 +228,7 @@ export default function ReportsPage() {
                       }}
                     />
                     <input
+                      id="report-mobile"
                       type="tel"
                       value={form.mobile}
                       onChange={(e) =>
@@ -240,6 +242,7 @@ export default function ReportsPage() {
                 </div>
                 <div>
                   <label
+                    htmlFor="report-location"
                     style={{
                       color: "#7e8aa0",
                       fontSize: 10,
@@ -263,6 +266,7 @@ export default function ReportsPage() {
                       }}
                     />
                     <input
+                      id="report-location"
                       type="text"
                       value={form.location}
                       onChange={(e) =>
@@ -275,6 +279,7 @@ export default function ReportsPage() {
                 </div>
                 <div>
                   <label
+                    htmlFor="report-description"
                     style={{
                       color: "#7e8aa0",
                       fontSize: 10,
@@ -287,6 +292,7 @@ export default function ReportsPage() {
                     DESCRIPTION OF SUSPICIOUS ACTIVITY
                   </label>
                   <textarea
+                    id="report-description"
                     value={form.description}
                     onChange={(e) =>
                       setForm((p) => ({ ...p, description: e.target.value }))

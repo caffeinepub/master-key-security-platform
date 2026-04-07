@@ -74,7 +74,6 @@ export default function HomePage() {
           overflow: "hidden",
         }}
       >
-        {/* Background glow */}
         <div
           style={{
             position: "absolute",
@@ -90,7 +89,6 @@ export default function HomePage() {
         />
 
         <div className="max-w-4xl mx-auto relative">
-          {/* Shield logo */}
           <div className="flex justify-center mb-6">
             <div
               style={{
@@ -157,6 +155,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/login">
               <button
+                type="button"
                 className="btn-danger"
                 style={{
                   padding: "12px 32px",
@@ -171,6 +170,7 @@ export default function HomePage() {
             </Link>
             <Link to="/about">
               <button
+                type="button"
                 style={{
                   padding: "12px 32px",
                   fontSize: 14,
@@ -346,6 +346,7 @@ export default function HomePage() {
             </p>
             <Link to="/privacy">
               <button
+                type="button"
                 style={{
                   background: "transparent",
                   border: "1px solid #2a3648",

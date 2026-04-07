@@ -3,17 +3,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "504560@AUC";
+
 export default function LoginPage() {
   const [tab, setTab] = useState<"admin" | "member">("admin");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Admin form state
   const [adminUser, setAdminUser] = useState("");
   const [adminPass, setAdminPass] = useState("");
-
-  // Member form state
   const [memberMobile, setMemberMobile] = useState("");
   const [memberCode, setMemberCode] = useState("");
 
@@ -22,11 +22,11 @@ export default function LoginPage() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      if (adminUser && adminPass) {
+      if (adminUser === ADMIN_USERNAME && adminPass === ADMIN_PASSWORD) {
         toast.success("Admin login successful");
         navigate("/admin");
       } else {
-        toast.error("Invalid credentials");
+        toast.error("Invalid username or password");
       }
     }, 1200);
   };
@@ -77,7 +77,6 @@ export default function LoginPage() {
           boxShadow: "0 8px 48px rgba(0,0,0,0.6)",
         }}
       >
-        {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-6">
           <div
             style={{
@@ -133,6 +132,7 @@ export default function LoginPage() {
           {(["admin", "member"] as const).map((t) => (
             <button
               key={t}
+              type="button"
               onClick={() => setTab(t)}
               style={{
                 padding: "8px",
@@ -163,6 +163,7 @@ export default function LoginPage() {
           >
             <div>
               <label
+                htmlFor="admin-username"
                 style={{
                   color: "#7e8aa0",
                   fontSize: 11,
@@ -186,10 +187,11 @@ export default function LoginPage() {
                   }}
                 />
                 <input
+                  id="admin-username"
                   type="text"
                   value={adminUser}
                   onChange={(e) => setAdminUser(e.target.value)}
-                  placeholder="admin@masterkey.sec"
+                  placeholder="admin"
                   style={{ ...inputStyle, paddingLeft: 36 }}
                   required
                 />
@@ -197,6 +199,7 @@ export default function LoginPage() {
             </div>
             <div>
               <label
+                htmlFor="admin-password"
                 style={{
                   color: "#7e8aa0",
                   fontSize: 11,
@@ -220,6 +223,7 @@ export default function LoginPage() {
                   }}
                 />
                 <input
+                  id="admin-password"
                   type={showPass ? "text" : "password"}
                   value={adminPass}
                   onChange={(e) => setAdminPass(e.target.value)}
@@ -272,6 +276,7 @@ export default function LoginPage() {
           >
             <div>
               <label
+                htmlFor="member-mobile"
                 style={{
                   color: "#7e8aa0",
                   fontSize: 11,
@@ -295,6 +300,7 @@ export default function LoginPage() {
                   }}
                 />
                 <input
+                  id="member-mobile"
                   type="tel"
                   value={memberMobile}
                   onChange={(e) => setMemberMobile(e.target.value)}
@@ -306,6 +312,7 @@ export default function LoginPage() {
             </div>
             <div>
               <label
+                htmlFor="member-code"
                 style={{
                   color: "#7e8aa0",
                   fontSize: 11,
@@ -329,6 +336,7 @@ export default function LoginPage() {
                   }}
                 />
                 <input
+                  id="member-code"
                   type="password"
                   value={memberCode}
                   onChange={(e) => setMemberCode(e.target.value)}

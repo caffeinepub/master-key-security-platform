@@ -1,4 +1,4 @@
-import { Bell, LogIn, Menu, Search, Shield, X } from "lucide-react";
+import { Bell, Download, LogIn, Menu, Search, Shield, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
@@ -12,6 +12,7 @@ export default function Navbar() {
     { href: "/dashboard", label: "Dashboard" },
     { href: "/search", label: "Search" },
     { href: "/admin", label: "Admin Panel" },
+    { href: "/apk-install", label: "APK Install" },
   ];
 
   const isActive = (href: string) =>
@@ -63,18 +64,32 @@ export default function Navbar() {
                 key={link.href}
                 to={link.href}
                 style={{
-                  color: isActive(link.href) ? "#e53935" : "#a7b1c2",
+                  color:
+                    link.href === "/apk-install"
+                      ? "#42a5f5"
+                      : isActive(link.href)
+                        ? "#e53935"
+                        : "#a7b1c2",
                   fontSize: 13,
                   fontWeight: 600,
                   letterSpacing: 1,
                   textDecoration: "none",
-                  borderBottom: isActive(link.href)
-                    ? "2px solid #e53935"
-                    : "2px solid transparent",
+                  borderBottom:
+                    link.href === "/apk-install"
+                      ? isActive(link.href)
+                        ? "2px solid #42a5f5"
+                        : "2px solid transparent"
+                      : isActive(link.href)
+                        ? "2px solid #e53935"
+                        : "2px solid transparent",
                   paddingBottom: 2,
                   transition: "color 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
                 }}
               >
+                {link.href === "/apk-install" && <Download size={12} />}
                 {link.label}
               </Link>
             ))}
@@ -83,6 +98,7 @@ export default function Navbar() {
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3">
             <button
+              type="button"
               style={{
                 color: "#a7b1c2",
                 background: "none",
@@ -112,6 +128,7 @@ export default function Navbar() {
 
           {/* Mobile toggle */}
           <button
+            type="button"
             className="md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             style={{
@@ -140,14 +157,22 @@ export default function Navbar() {
                 to={link.href}
                 onClick={() => setMobileOpen(false)}
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
                   padding: "10px 16px",
-                  color: isActive(link.href) ? "#e53935" : "#a7b1c2",
+                  color:
+                    link.href === "/apk-install"
+                      ? "#42a5f5"
+                      : isActive(link.href)
+                        ? "#e53935"
+                        : "#a7b1c2",
                   fontSize: 14,
                   fontWeight: 600,
                   textDecoration: "none",
                 }}
               >
+                {link.href === "/apk-install" && <Download size={13} />}
                 {link.label}
               </Link>
             ))}
